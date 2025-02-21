@@ -1,0 +1,61 @@
+.App {
+    display: grid;
+    place-items: center;
+    height: 100vh;
+    background-color: #f9f9f9;
+    gap: 20px;
+}
+
+.cash {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 700px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 35px rgba(0, 0, 0, 0.05);
+}
+
+.customers {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 90%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 35px rgba(0, 0, 0, 0.05);
+}
+
+.customers__list {
+    display: flex;
+    flex-direction: column;
+}
+
+.customers__item {
+    color: white;
+    font-size: 18px;
+    padding: 15px;
+    margin: 15px;
+    background-color: rgb(79, 113, 138);
+    border-radius: 10px;
+    cursor: pointer; /* это свойство изменит курсор при наведении */
+    transition: background-color 0.3s ease;
+}
+
+.customers__item:hover {
+    background-color: #6c2727;
+}
+
+button {
+    background-color: #007bff;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
