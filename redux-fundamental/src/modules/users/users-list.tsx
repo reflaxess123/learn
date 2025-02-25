@@ -1,21 +1,17 @@
 import { memo, useState } from "react";
-import { useAppDispath, useAppSelector } from "../../store";
-import {
-    selectSelectedUserId,
-    selectSortedUsers,
-    UserId,
-    UsersRemoveSelectedAction,
-    UsersSelectedAction,
-} from "./users.slice";
+import { useAppDispatch, useAppSelector } from "../../store";
+import { UserId, usersSlice } from "./users.slice";
 
 export function UsersList() {
     console.log("render UsersList");
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
 
     const sortedUsers = useAppSelector((state) =>
-        selectSortedUsers(state, sortType)
+        usersSlice.selectors.selectSortedUsers(state, sortType)
     );
-    const selectedUserId = useAppSelector(selectSelectedUserId);
+    const selectedUserId = useAppSelector(
+        usersSlice.selectors.selectSelectedUserId
+    );
 
     return (
         <div className="flex flex-col items-center">
@@ -54,12 +50,9 @@ const UserListItem = memo(function UserListItem({
     userId: UserId;
 }) {
     const user = useAppSelector((state) => state.users.entities[userId]);
-    const dispatch = useAppDispath();
+    const dispatch = useAppDispatch();
     const handleUserClick = () => {
-        dispatch({
-            type: "usersSelected",
-            payload: { userId: user.id },
-        } satisfies UsersSelectedAction);
+        dispatch(usersSlice.actions.selected({ userId }));
     };
     return (
         <li key={user.id} className="py-2" onClick={handleUserClick}>
@@ -70,11 +63,9 @@ const UserListItem = memo(function UserListItem({
 
 function SelectedUser({ userId }: { userId: UserId }) {
     const user = useAppSelector((state) => state.users.entities[userId]);
-    const dispatch = useAppDispath();
+    const dispatch = useAppDispatch();
     const handeBackButtonCLick = () => {
-        dispatch({
-            type: "usersRemoveSelected",
-        } satisfies UsersRemoveSelectedAction);
+        dispatch(usersSlice.actions.removeSelected());
     };
     return (
         <div className="flex flex-col items-center">
