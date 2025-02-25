@@ -1,3 +1,5 @@
+import { AppState } from "../../store";
+
 type CounterState = {
     counter: number;
 };
