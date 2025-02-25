@@ -7,7 +7,7 @@ import {
     UserId,
     UsersRemoveSelectedAction,
     UsersSelectedAction,
-} from "./store";
+} from "../../store";
 
 const selectSortedUsers = createAppSelector(
     (state: AppState) => state.users.ids,
@@ -22,7 +22,7 @@ const selectSortedUsers = createAppSelector(
                 } else {
                     return b.name.localeCompare(a.name);
                 }
-            }),
+            })
 );
 
 export function UsersList() {
@@ -30,10 +30,10 @@ export function UsersList() {
     const [sortType, setSortType] = useState<"asc" | "desc">("asc");
 
     const sortedUsers = useAppSelector((state) =>
-        selectSortedUsers(state, sortType),
+        selectSortedUsers(state, sortType)
     );
     const selectedUserId = useAppSelector(
-        (state) => state.users.selectedUserId,
+        (state) => state.users.selectedUserId
     );
 
     return (

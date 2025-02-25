@@ -4,149 +4,12 @@ import {
     createSelector,
 } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
-
-export type UserId = string;
-
-export type User = {
-    id: UserId;
-    name: string;
-    description: string;
-};
-
-const users: User[] = Array.from({ length: 3000 }, (_, index) => ({
-    id: `user${index + 11}`,
-    name: `User ${index + 11}`,
-    description: `Description for User ${index + 11}`,
-}));
-
-type UsersState = {
-    entities: Record<UserId, User>;
-    ids: string[];
-    selectedUserId: UserId | undefined;
-};
-
-type CounterState = {
-    counter: number;
-};
-export type CounterId = string;
-
-type CountersState = Record<CounterId, CounterState | undefined>;
-
-export type UsersSelectedAction = {
-    type: "usersSelected";
-    payload: {
-        userId: UserId;
-    };
-};
-
-export type UsersRemoveSelectedAction = {
-    type: "usersRemoveSelected";
-};
-
-export type UsersStoredAction = {
-    type: "usersStored";
-    payload: {
-        users: User[];
-    };
-};
-
-export type IncrementAction = {
-    type: "increment";
-    payload: {
-        counterId: CounterId;
-    };
-};
-
-export type DecrementAction = {
-    type: "decrement";
-    payload: {
-        counterId: CounterId;
-    };
-};
-
-type Action =
-    | IncrementAction
-    | DecrementAction
-    | UsersStoredAction
-    | UsersSelectedAction
-    | UsersRemoveSelectedAction;
-
-const initialUsersState: UsersState = {
-    entities: {},
-    ids: [],
-    selectedUserId: undefined,
-};
-
-const initialCounterState: CounterState = { counter: 0 };
-const initialCountersState: CountersState = {};
-
-const usersReducer = (
-    state = initialUsersState,
-    action: Action
-): UsersState => {
-    switch (action.type) {
-        case "usersStored": {
-            const { users } = action.payload;
-            return {
-                ...state,
-                entities: users.reduce((acc, user) => {
-                    acc[user.id] = user;
-                    return acc;
-                }, {} as Record<UserId, User>),
-                ids: users.map((user) => user.id), // Записываем массив id
-            };
-        }
-
-        case "usersSelected": {
-            const { userId } = action.payload;
-            return {
-                ...state,
-                selectedUserId: userId,
-            };
-        }
-
-        case "usersRemoveSelected": {
-            return {
-                ...state,
-                selectedUserId: undefined,
-            };
-        }
-        default:
-            return state;
-    }
-};
-
-const countersReducer = (
-    state = initialCountersState,
-    action: Action
-): CountersState => {
-    switch (action.type) {
-        case "increment": {
-            const { counterId } = action.payload;
-            const currentCounter = state[counterId] ?? initialCounterState;
-            return {
-                ...state,
-                [counterId]: {
-                    ...currentCounter,
-                    counter: currentCounter.counter + 1,
-                },
-            };
-        }
-        case "decrement": {
-            const { counterId } = action.payload;
-            const currentCounter = state[counterId] ?? initialCounterState;
-            return {
-                ...state,
-                [counterId]: {
-                    ...currentCounter,
-                    counter: currentCounter.counter - 1,
-                },
-            };
-        }
-        default:
-            return state;
-    }
-};
+import { countersReducer } from "./modules/counters/counters.slice";
+import {
+    initialUsersList,
+    usersReducer,
+    UsersStoredAction,
+} from "./modules/users/users.slice";
 
 const reducer = combineReducers({
     users: usersReducer,
@@ -159,7 +22,7 @@ export const store = configureStore({
 
 store.dispatch({
     type: "usersStored",
-    payload: { users },
+    payload: { users: initialUsersList },
 } satisfies UsersStoredAction);
 
 export const selectCounter = (state: AppState, counterId: CounterId) =>
