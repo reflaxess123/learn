@@ -1,5 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createAppSelector } from "../../store";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type UserId = string;
 
@@ -35,7 +34,7 @@ export const usersSlice = createSlice({
     initialState: initialUsersState,
     selectors: {
         selectSelectedUserId: (state) => state.selectedUserId,
-        selectSortedUsers: createAppSelector(
+        selectSortedUsers: createSelector(
             (state: UsersState) => state.ids,
             (state: UsersState) => state.entities,
             (_: UsersState, sort: "asc" | "desc") => sort,

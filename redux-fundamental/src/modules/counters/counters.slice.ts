@@ -1,12 +1,12 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { AppState } from "../../store";
 
-type CounterState = {
+export type CounterState = {
     counter: number;
 };
 
-type CountersState = Record<CounterId, CounterState | undefined>;
 export type CounterId = string;
+export type CountersState = Record<CounterId, CounterState | undefined>;
 
 createAction;
 createReducer;
