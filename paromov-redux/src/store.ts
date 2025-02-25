@@ -74,7 +74,7 @@ export const store = configureStore({
 });
 
 export const selectCounter = (state: AppState, counterId: CounterId) => {
-    state.counters[counterId];
+    return state.counters[counterId];
 };
 
 export type AppState = ReturnType<typeof store.getState>;

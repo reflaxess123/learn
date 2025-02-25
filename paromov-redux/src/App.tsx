@@ -28,6 +28,7 @@ function App() {
             <h1>Vite + React</h1>
             <Counter counterId="first" />
             <Counter counterId="second" />
+            <Counter counterId="thrird" />
             <div className="card">
                 <p>
                     Edit <code>src/App.tsx</code> and save to test HMR
@@ -49,7 +50,7 @@ export function Counter({ counterId }: { counterId: CounterId }) {
     console.log('rerender' + counterId);
     return (
         <>
-            counter {counterState?.counter}
+            counter {counterState?.counter ?? 0}
             <button
                 onClick={() =>
                     dispatch({
