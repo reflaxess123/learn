@@ -1,5 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createAppSelector } from "../../store";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AppState, createAppSelector } from "../../store";
 
 export type UserId = string;
 
@@ -29,6 +29,7 @@ const initialUsersState: UsersState = {
     ids: [],
     selectedUserId: undefined,
 };
+const createAppSelector = createSelector.withTypes<AppState>();
 
 export const usersSlice = createSlice({
     name: "users",
