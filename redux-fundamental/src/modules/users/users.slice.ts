@@ -9,9 +9,10 @@ export type User = {
 };
 
 type UsersState = {
-    entities: Record<UserId, User>;
+    entities: Record<UserId, User | undefined>;
     ids: string[];
-    selectedUserId: UserId | undefined;
+    fetchUsersStatus: "idle" | "pending" | "success" | "failed";
+    fetchUserStatus: "idle" | "pending" | "success" | "failed";
 };
 
 export const initialUsersList: User[] = Array.from(
@@ -26,14 +27,15 @@ export const initialUsersList: User[] = Array.from(
 const initialUsersState: UsersState = {
     entities: {},
     ids: [],
-    selectedUserId: undefined,
+    fetchUsersStatus: "idle",
+    fetchUserStatus: "idle",
 };
 
 export const usersSlice = createSlice({
     name: "users",
     initialState: initialUsersState,
     selectors: {
-        selectSelectedUserId: (state) => state.selectedUserId,
+        selectUserById: (state, userId: UserId) => state.entities[userId],
         selectSortedUsers: createSelector(
             (state: UsersState) => state.ids,
             (state: UsersState) => state.entities,
@@ -41,6 +43,7 @@ export const usersSlice = createSlice({
             (ids, entities, sort) =>
                 ids
                     .map((id) => entities[id])
+                    .filter((user): user is User => !!user)
                     .sort((a, b) => {
                         if (sort === "asc") {
                             return a.name.localeCompare(b.name);
@@ -49,21 +52,43 @@ export const usersSlice = createSlice({
                         }
                     })
         ),
+        selectIsFetchUsersPending: (state) =>
+            state.fetchUsersStatus === "pending",
+        selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
+        selectIsFetchUserPending: (state) =>
+            state.fetchUserStatus === "pending",
     },
     reducers: {
-        stored: (state, action: PayloadAction<{ users: User[] }>) => {
+        fetchUsersPending: (state) => {
+            state.fetchUsersStatus = "pending";
+        },
+        fetchUsersSuccess: (
+            state,
+            action: PayloadAction<{ users: User[] }>
+        ) => {
             const { users } = action.payload;
+
+            state.fetchUsersStatus = "success";
             state.entities = users.reduce((acc, user) => {
                 acc[user.id] = user;
                 return acc;
             }, {} as Record<UserId, User>);
             state.ids = users.map((user) => user.id); // Записываем массив id
         },
-        selected: (state, action: PayloadAction<{ userId: UserId }>) => {
-            state.selectedUserId = action.payload.userId;
+        fetchUsersFailed: (state) => {
+            state.fetchUsersStatus = "failed";
         },
-        removeSelected: (state) => {
-            state.selectedUserId = undefined;
+        fetchUserPending: (state) => {
+            state.fetchUsersStatus = "pending";
+        },
+        fetchUserSuccess: (state, action: PayloadAction<{ user: User }>) => {
+            const { user } = action.payload;
+
+            state.fetchUsersStatus = "success";
+            state.entities[user.id] = user;
+        },
+        fetchUserFailed: (state) => {
+            state.fetchUsersStatus = "failed";
         },
     },
 });
