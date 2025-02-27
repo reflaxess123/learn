@@ -1,7 +1,15 @@
 import { createBrowserRouter, Link, Outlet, redirect } from "react-router-dom";
-import { Counters } from "./modules/counters/counters";
-import { UserInfo } from "./modules/users/user-info";
-import { UsersList } from "./modules/users/users-list";
+import { Counters } from "../modules/counters/counters";
+import { fetchUser } from "../modules/users/model/fetch-user";
+import { fetchUsers } from "../modules/users/model/fetch-users";
+import { UserInfo } from "../modules/users/user-info";
+import { UsersList } from "../modules/users/users-list";
+import { store } from "./store";
+
+const loadStore = () =>
+    new Promise((resolve) => {
+        setTimeout(() => resolve(store), 0);
+    });
 
 export const router = createBrowserRouter([
     {
@@ -23,10 +31,22 @@ export const router = createBrowserRouter([
             {
                 path: "users",
                 element: <UsersList />,
+                loader: () => {
+                    loadStore().then(() => {
+                        store.dispatch(fetchUsers({}));
+                    });
+                    return null;
+                },
             },
             {
                 path: "users/:id",
                 element: <UserInfo />,
+                loader: ({ params }) => {
+                    loadStore().then(() => {
+                        store.dispatch(fetchUser(params.id ?? ""));
+                    });
+                    return null;
+                },
             },
             {
                 path: "counters",

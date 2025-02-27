@@ -7,7 +7,7 @@ import {
 } from "./counters.slice";
 
 import { bindActionCreators } from "@reduxjs/toolkit";
-import { useAppSelector } from "../../store";
+import { useAppSelector } from "../../shared/redux";
 
 export function Counters() {
     return (

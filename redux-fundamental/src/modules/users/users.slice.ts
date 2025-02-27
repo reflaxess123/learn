@@ -1,4 +1,5 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { fetchUsers } from "./model/fetch-users";
 
 export type UserId = string;
 
@@ -13,6 +14,7 @@ type UsersState = {
     ids: string[];
     fetchUsersStatus: "idle" | "pending" | "success" | "failed";
     fetchUserStatus: "idle" | "pending" | "success" | "failed";
+    deleteUserStatus: "idle" | "pending" | "success" | "failed";
 };
 
 export const initialUsersList: User[] = Array.from(
@@ -29,6 +31,7 @@ const initialUsersState: UsersState = {
     ids: [],
     fetchUsersStatus: "idle",
     fetchUserStatus: "idle",
+    deleteUserStatus: "idle",
 };
 
 export const usersSlice = createSlice({
@@ -57,27 +60,10 @@ export const usersSlice = createSlice({
         selectIsFetchUsersIdle: (state) => state.fetchUsersStatus === "idle",
         selectIsFetchUserPending: (state) =>
             state.fetchUserStatus === "pending",
+        selectIsDeleteUserPending: (state) =>
+            state.deleteUserStatus === "pending",
     },
     reducers: {
-        fetchUsersPending: (state) => {
-            state.fetchUsersStatus = "pending";
-        },
-        fetchUsersSuccess: (
-            state,
-            action: PayloadAction<{ users: User[] }>
-        ) => {
-            const { users } = action.payload;
-
-            state.fetchUsersStatus = "success";
-            state.entities = users.reduce((acc, user) => {
-                acc[user.id] = user;
-                return acc;
-            }, {} as Record<UserId, User>);
-            state.ids = users.map((user) => user.id); // Записываем массив id
-        },
-        fetchUsersFailed: (state) => {
-            state.fetchUsersStatus = "failed";
-        },
         fetchUserPending: (state) => {
             state.fetchUsersStatus = "pending";
         },
@@ -90,5 +76,36 @@ export const usersSlice = createSlice({
         fetchUserFailed: (state) => {
             state.fetchUsersStatus = "failed";
         },
+        deleteUserPending: (state) => {
+            state.deleteUserStatus = "pending";
+        },
+        deleteUserSuccess: (
+            state,
+            action: PayloadAction<{ userId: UserId }>
+        ) => {
+            state.deleteUserStatus = "success";
+            delete state.entities[action.payload.userId];
+            state.ids.filter((id) => id !== action.payload.userId);
+        },
+        deleteUserFailed: (state) => {
+            state.deleteUserStatus = "failed";
+        },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(fetchUsers.pending, (state) => {
+            state;
+        });
+        builder.addCase(fetchUsers.fulfilled, (state, action) => {
+            state.fetchUserStatus = "success";
+            const users = action.payload;
+            state.entities = users.reduce((acc, user) => {
+                acc[user.id] = user;
+                return acc;
+            }, {} as Record<UserId, User>);
+            state.ids = users.map((user) => user.id);
+        });
+        builder.addCase(fetchUsers.rejected, (state) => {
+            state.fetchUserStatus = "failed";
+        });
     },
 });
